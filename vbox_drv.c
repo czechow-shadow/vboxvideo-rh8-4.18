@@ -38,6 +38,7 @@ static int vbox_pci_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 {
 	struct vbox_private *vbox;
 	int ret = 0;
+  printk("PCZ beg %s:%s()\n", __FILE__, __PRETTY_FUNCTION__); // PCZ
 
 	if (!vbox_check_supported(VBE_DISPI_ID_HGSMI))
 		return -ENODEV;
@@ -81,6 +82,7 @@ static int vbox_pci_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 
 	drm_fbdev_generic_setup(&vbox->ddev, 32);
 
+	printk("PCZ end %s:%s()\n", __FILE__, __PRETTY_FUNCTION__); // PCZ
 	return 0;
 
 err_irq_fini:
@@ -91,6 +93,7 @@ err_mm_fini:
 	vbox_mm_fini(vbox);
 err_hw_fini:
 	vbox_hw_fini(vbox);
+	printk("PCZ err %s:%s()\n", __FILE__, __PRETTY_FUNCTION__); // PCZ
 	return ret;
 }
 
@@ -195,7 +198,7 @@ static struct drm_driver driver = {
 
 static int __init vbox_init(void)
 {
-  printk("vboxvideo: Loading PCZ version of the module\n");
+  printk("PCZ loading module %s:%s()\n", __FILE__, __PRETTY_FUNCTION__); // PCZ
 #ifdef CONFIG_VGA_CONSOLE
 	if (vgacon_text_force() && vbox_modeset == -1)
 		return -EINVAL;

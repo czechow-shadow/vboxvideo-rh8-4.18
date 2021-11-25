@@ -15,6 +15,7 @@ int vbox_mm_init(struct vbox_private *vbox)
 	struct drm_vram_mm *vmm;
 	int ret;
 	struct drm_device *dev = &vbox->ddev;
+  printk("PCZ beg %s:%s()\n", __FILE__, __PRETTY_FUNCTION__); // PCZ
 
 	vmm = drm_vram_helper_alloc_mm(dev, pci_resource_start(dev->pdev, 0),
 				       vbox->available_vram_size);
@@ -26,6 +27,7 @@ int vbox_mm_init(struct vbox_private *vbox)
 
 	vbox->fb_mtrr = arch_phys_wc_add(pci_resource_start(dev->pdev, 0),
 					 pci_resource_len(dev->pdev, 0));
+  printk("PCZ end %s:%s()\n", __FILE__, __PRETTY_FUNCTION__); // PCZ
 	return 0;
 }
 

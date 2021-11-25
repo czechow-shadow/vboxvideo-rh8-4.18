@@ -37,6 +37,7 @@ irqreturn_t vbox_irq_handler(int irq, void *arg)
 	struct vbox_private *vbox = to_vbox_dev(dev);
 	u32 host_flags = vbox_get_flags(vbox);
 
+  printk("PCZ beg %s:%s()\n", __FILE__, __PRETTY_FUNCTION__); // PCZ
 	if (!(host_flags & HGSMIHOSTFLAGS_IRQ))
 		return IRQ_NONE;
 
@@ -53,6 +54,7 @@ irqreturn_t vbox_irq_handler(int irq, void *arg)
 
 	vbox_clear_irq();
 
+  printk("PCZ end %s:%s()\n", __FILE__, __PRETTY_FUNCTION__); // PCZ
 	return IRQ_HANDLED;
 }
 
@@ -102,6 +104,14 @@ static void validate_or_set_position_hints(struct vbox_private *vbox)
 		}
 }
 
+void pczDumpHints(struct vbva_modehint* h) {
+  printk("PCZ Dumping modeHints: magic=0x%08x, cx=%d, cy=%d, bpp=%d"
+	 ", display=%d, dx=%d, dy=%d, enabled=%d"
+	 "\n"
+	 , h->magic, h->cx, h->cy, h->bpp
+	 , h->display, h->dx, h->dy, h->enabled );
+}
+
 /* Query the host for the most recent video mode hints. */
 static void vbox_update_mode_hints(struct vbox_private *vbox)
 {
@@ -115,6 +125,8 @@ static void vbox_update_mode_hints(struct vbox_private *vbox)
 	unsigned int crtc_id;
 	int ret;
 
+  printk("PCZ querying host for mode hints (rough) %s:%s()\n", __FILE__, __PRETTY_FUNCTION__); // PCZ
+
 	ret = hgsmi_get_mode_hints(vbox->guest_pool, vbox->num_crtcs,
 				   vbox->last_mode_hints);
 	if (ret) {
@@ -123,6 +135,7 @@ static void vbox_update_mode_hints(struct vbox_private *vbox)
 	}
 
 	validate_or_set_position_hints(vbox);
+	pczDumpHints(vbox->last_mode_hints);
 
 	drm_modeset_lock(&dev->mode_config.connection_mutex, NULL);
 	drm_connector_list_iter_begin(dev, &conn_iter);
@@ -163,16 +176,21 @@ static void vbox_hotplug_worker(struct work_struct *work)
 {
 	struct vbox_private *vbox = container_of(work, struct vbox_private,
 						 hotplug_work);
+  printk("PCZ beg %s:%s()\n", __FILE__, __PRETTY_FUNCTION__); // PCZ
 
 	vbox_update_mode_hints(vbox);
-	drm_kms_helper_hotplug_event(&vbox->ddev);
+	drm_kms_helper_hotplug_event(&vbox->ddev); // PCZ: this probably triggers mode setting
+  printk("PCZ end %s:%s()\n", __FILE__, __PRETTY_FUNCTION__); // PCZ
 }
 
 int vbox_irq_init(struct vbox_private *vbox)
 {
+  printk("PCZ beg %s:%s()\n", __FILE__, __PRETTY_FUNCTION__); // PCZ
+
 	INIT_WORK(&vbox->hotplug_work, vbox_hotplug_worker);
 	vbox_update_mode_hints(vbox);
 
+  printk("PCZ end %s:%s()\n", __FILE__, __PRETTY_FUNCTION__); // PCZ
 	return drm_irq_install(&vbox->ddev, vbox->ddev.pdev->irq);
 }
 

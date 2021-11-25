@@ -32,6 +32,7 @@ static int vbox_accel_init(struct vbox_private *vbox)
 {
 	struct vbva_buffer *vbva;
 	unsigned int i;
+  printk("PCZ beg %s:%s()\n", __FILE__, __PRETTY_FUNCTION__); // PCZ
 
 	vbox->vbva_info = devm_kcalloc(vbox->ddev.dev, vbox->num_crtcs,
 				       sizeof(*vbox->vbva_info), GFP_KERNEL);
@@ -62,6 +63,7 @@ static int vbox_accel_init(struct vbox_private *vbox)
 		}
 	}
 
+  printk("PCZ end %s:%s()\n", __FILE__, __PRETTY_FUNCTION__); // PCZ
 	return 0;
 }
 
@@ -107,6 +109,7 @@ bool vbox_check_supported(u16 id)
 int vbox_hw_init(struct vbox_private *vbox)
 {
 	int ret = -ENOMEM;
+  printk("PCZ %s:%s()\n", __FILE__, __PRETTY_FUNCTION__); // PCZ
 
 	vbox->full_vram_size = inl(VBE_DISPI_IOPORT_DATA);
 	vbox->any_pitch = vbox_check_supported(VBE_DISPI_ID_ANYX);
@@ -145,6 +148,7 @@ int vbox_hw_init(struct vbox_private *vbox)
 	hgsmi_query_conf(vbox->guest_pool, VBOX_VBVA_CONF32_MONITOR_COUNT,
 			 &vbox->num_crtcs);
 	vbox->num_crtcs = clamp_t(u32, vbox->num_crtcs, 1, VBOX_MAX_SCREENS);
+	printk("PCZ crts#: %d %s:%s()\n", vbox->num_crtcs, __FILE__, __PRETTY_FUNCTION__); // PCZ
 
 	if (!have_hgsmi_mode_hints(vbox)) {
 		ret = -ENOTSUPP;

@@ -62,11 +62,13 @@ int hgsmi_test_query_conf(struct gen_pool *ctx)
 {
 	u32 value = 0;
 	int ret;
+  printk("PCZ beg %s:%s()\n", __FILE__, __PRETTY_FUNCTION__); // PCZ
 
 	ret = hgsmi_query_conf(ctx, U32_MAX, &value);
 	if (ret)
 		return ret;
 
+  printk("PCZ end %s:%s()\n", __FILE__, __PRETTY_FUNCTION__); // PCZ
 	return value == U32_MAX ? 0 : -EIO;
 }
 

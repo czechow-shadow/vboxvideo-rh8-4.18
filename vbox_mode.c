@@ -703,14 +703,17 @@ static int vbox_get_modes(struct drm_connector *connector)
 	unsigned int num_modes = 0;
 	int preferred_width, preferred_height;
 
+  printk("PCZ beg %s:%s()\n", __FILE__, __PRETTY_FUNCTION__);
+  printk("PCZ *core mode setting* %s:%s()\n", __FILE__, __PRETTY_FUNCTION__);
 	vbox_connector = to_vbox_connector(connector);
 	vbox = to_vbox_dev(connector->dev);
 
 	hgsmi_report_flags_location(vbox->guest_pool, GUEST_HEAP_OFFSET(vbox) +
 				    HOST_FLAGS_OFFSET);
-	if (vbox_connector->vbox_crtc->crtc_id == 0)
+	if (vbox_connector->vbox_crtc->crtc_id == 0) {
+  printk("PCZ HERE: calling vbox_report_caps %s:%s()\n", __FILE__, __PRETTY_FUNCTION__);
 		vbox_report_caps(vbox);
-
+	}
 	num_modes = drm_add_modes_noedid(connector, 2560, 1600);
 	preferred_width = vbox_connector->mode_hint.width ?
 			  vbox_connector->mode_hint.width : 1024;
@@ -741,6 +744,8 @@ static int vbox_get_modes(struct drm_connector *connector)
 		drm_object_property_set_value(&connector->base,
 			vbox->ddev.mode_config.suggested_y_property, 0);
 
+  printk("PCZ num_modes: %d in %s:%s()\n", num_modes, __FILE__, __PRETTY_FUNCTION__);
+  printk("PCZ end %s:%s()\n", __FILE__, __PRETTY_FUNCTION__);
 	return num_modes;
 }
 
@@ -806,9 +811,9 @@ static int vbox_connector_init(struct drm_device *dev,
 	connector = &vbox_connector->base;
 	vbox_connector->vbox_crtc = vbox_crtc;
 
-	drm_connector_init(dev, connector, &vbox_connector_funcs,
+	drm_connector_init(dev, connector, &vbox_connector_funcs, //PCZ HERE
 			   DRM_MODE_CONNECTOR_VGA);
-	drm_connector_helper_add(connector, &vbox_connector_helper_funcs);
+	drm_connector_helper_add(connector, &vbox_connector_helper_funcs); //PCZ HERE
 
 	connector->interlace_allowed = 0;
 	connector->doublescan_allowed = 0;
@@ -838,6 +843,8 @@ int vbox_mode_init(struct vbox_private *vbox)
 	struct vbox_crtc *vbox_crtc;
 	unsigned int i;
 	int ret;
+  printk("PCZ beg %s:%s()\n", __FILE__, __PRETTY_FUNCTION__);
+  printk("PCZ might want to dig here %s:%s()\n", __FILE__, __PRETTY_FUNCTION__); // PCZ
 
 	drm_mode_config_init(dev);
 
@@ -865,6 +872,7 @@ int vbox_mode_init(struct vbox_private *vbox)
 	}
 
 	drm_mode_config_reset(dev);
+  printk("PCZ end %s:%s()\n", __FILE__, __PRETTY_FUNCTION__); // PCZ
 	return 0;
 
 err_drm_mode_cleanup:
